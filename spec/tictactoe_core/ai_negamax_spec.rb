@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'tictactoe_core/ai_negamax'
 require 'tictactoe_core/board'
 

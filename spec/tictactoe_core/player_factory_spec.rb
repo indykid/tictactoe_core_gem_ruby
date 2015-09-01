@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'tictactoe_core/player_factory'
 
 describe TictactoeCore::PlayerFactory do

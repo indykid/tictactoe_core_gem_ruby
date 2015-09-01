@@ -1,4 +1,3 @@
-require 'spec_helper'
 require 'tictactoe_core/game'
 require 'tictactoe_core/board'
 
