@@ -1,5 +1,6 @@
 require "tictactoe_core/version"
-
-module TictactoeCore
-  # Your code goes here...
-end
+require "tictactoe_core/game"
+require "tictactoe_core/ai_negamax"
+require "tictactoe_core/player"
+require "tictactoe_core/player_factory"
+require "tictactoe_core/board"
