@@ -2,15 +2,15 @@ require 'tictactoe_core/game'
 require 'tictactoe_core/board'
 
 describe TictactoeCore::Game do
-  let(:ui)       { double.as_null_object }
+  let(:ui)       { FakeUi.new }
   let(:board_class) { TictactoeCore::Board }
   let(:board)    { board_class.new }
   let(:player_x) { FakePlayer.new(:x) }
   let(:player_o) { FakePlayer.new(:o) }
-  let(:board_double) { instance_double(board_class).as_null_object }
 
   it 'is not over at the start' do
     game = described_class.new(board, ui, player_x, player_o)
+
     expect(game.over?).to be(false)
   end
 
@@ -25,36 +25,36 @@ describe TictactoeCore::Game do
 
   it 'is over when drawn' do
     board = board_class.new([:x, :x, :o, 
-                       :o, :x, :x, 
-                       :x, :o, :o])
+                             :o, :x, :x, 
+                             :x, :o, :o])
     game = described_class.new(board, ui, player_x, player_o)
 
     expect(game.over?).to be(true)
   end
 
   it 'adds player moves to the board' do
-    game = described_class.new(board_double, ui, *setup_players([0], []))
+    game = described_class.new(board, ui, *setup_players([0], []))
 
     game.play_turn
 
-    expect(board_double).to have_received(:add_move).with(0, :x)
+    expect(game.board.mark_at(0)).to eq(:x)
   end
 
   it 'switches player turns' do
-    game = described_class.new(board_double, ui, *setup_players([0], [1]))
+    game = described_class.new(board, ui, *setup_players([0], [1]))
 
     2.times { game.play_turn }
 
-    expect(board_double).to have_received(:add_move).with(0, :x)
-    expect(board_double).to have_received(:add_move).with(1, :o)
+    expect(game.board.mark_at(0)).to eq(:x)
+    expect(game.board.mark_at(1)).to eq(:o)
   end
 
   it 'gets Ui to display the board' do
-    game = described_class.new(board_double, ui, *setup_players([0], []))
+    game = described_class.new(board, ui, *setup_players([0], []))
 
     game.play_turn
 
-    expect(ui).to have_received(:display_board)
+    expect(ui.board_display_count).to eq(1)
   end
 
   it 'gets Ui to inform on invalid move' do
@@ -62,7 +62,7 @@ describe TictactoeCore::Game do
 
     game.play_turn
 
-    expect(ui).to have_received(:notify_of_invalid_option)
+    expect(ui.invalid_option_count).to eq(1)
   end
 
   it 'plays till win' do
@@ -81,13 +81,12 @@ describe TictactoeCore::Game do
     expect(game.over?).to be(true)
   end
 
-  xit 'gets ui to display board one extra time after it is over' do
-#    allow(board_double).to receive(:add_move).and_return(board_double)
+  it 'gets ui to display board one extra time after it is over' do
     game = described_class.new(board, ui, *setup_players([0, 1, 2], [3, 4]))
 
     game.play
 
-    expect(ui).to have_received(:display_board).exactly(6).times
+    expect(ui.board_display_count).to eq(6)
   end
 
   it 'gets Ui to display game over at the end' do
@@ -95,7 +94,7 @@ describe TictactoeCore::Game do
 
     game.play
 
-    expect(ui).to have_received(:display_game_over)
+    expect(ui.game_over_count).to eq(1)
   end
 
   it 'gets Ui to display winner at the end of the won game' do
@@ -103,7 +102,7 @@ describe TictactoeCore::Game do
 
     game.play
 
-    expect(ui).to have_received(:display_winner)
+    expect(ui.winner_display_count).to eq(1)
   end
 
   it 'gets Ui to announce draw when drawn' do
@@ -111,7 +110,7 @@ describe TictactoeCore::Game do
 
     game.play
 
-    expect(ui).to have_received(:display_draw)
+    expect(ui.draw_display_count).to eq(1)
   end
 
   def setup_for_win
@@ -135,6 +134,41 @@ describe TictactoeCore::Game do
 
     def pick_position(board)
       moves.shift
+    end
+  end
+
+  class FakeUi
+    attr_reader :board_display_count,
+                :winner_display_count,
+                :draw_display_count,
+                :game_over_count,
+                :invalid_option_count
+    def initialize
+      @board_display_count = 0
+      @winner_display_count = 0
+      @draw_display_count = 0
+      @game_over_count = 0
+      @invalid_option_count = 0
+    end
+
+    def display_board(board)
+      @board_display_count += 1
+    end
+
+    def display_winner(winner)
+      @winner_display_count += 1
+    end
+
+    def display_draw
+      @draw_display_count += 1
+    end
+
+    def display_game_over
+      @game_over_count += 1
+    end
+
+    def notify_of_invalid_option
+      @invalid_option_count += 1
     end
   end
 end
