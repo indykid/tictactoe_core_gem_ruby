@@ -1,12 +1,18 @@
 require 'tictactoe_core/game'
 require 'tictactoe_core/board'
 
+RSpec::Matchers.define :have_different_marks_at do |a, b|
+  match do |actual|
+    actual.mark_at(a) != actual.mark_at(b)
+  end
+end
+
 describe TictactoeCore::Game do
-  let(:ui)       { FakeUi.new }
+  let(:ui)          { double('ui').as_null_object }
+  let(:player_x)    { FakePlayer.new(:x) }
+  let(:player_o)    { FakePlayer.new(:o) }
   let(:board_class) { TictactoeCore::Board }
-  let(:board)    { board_class.new }
-  let(:player_x) { FakePlayer.new(:x) }
-  let(:player_o) { FakePlayer.new(:o) }
+  let(:board)       { board_class.new }
 
   it 'is not over at the start' do
     game = described_class.new(board, ui, player_x, player_o)
@@ -45,16 +51,7 @@ describe TictactoeCore::Game do
 
     2.times { game.play_turn }
 
-    expect(game.board.mark_at(0)).to eq(:x)
-    expect(game.board.mark_at(1)).to eq(:o)
-  end
-
-  it 'gets Ui to display the board' do
-    game = described_class.new(board, ui, *setup_players([0], []))
-
-    game.play_turn
-
-    expect(ui.board_display_count).to eq(1)
+    expect(game.board).to have_different_marks_at(0, 1)
   end
 
   it 'gets Ui to inform on invalid move' do
@@ -62,7 +59,7 @@ describe TictactoeCore::Game do
 
     game.play_turn
 
-    expect(ui.invalid_option_count).to eq(1)
+    expect(ui).to have_received(:notify_of_invalid_option)
   end
 
   it 'plays till win' do
@@ -81,12 +78,20 @@ describe TictactoeCore::Game do
     expect(game.over?).to be(true)
   end
 
+  it 'gets Ui to display the board on each turn' do
+    game = described_class.new(board, ui, *setup_players([0], []))
+
+    game.play_turn
+
+    expect(ui).to have_received(:display_board)
+  end
+
   it 'gets ui to display board one extra time after it is over' do
     game = described_class.new(board, ui, *setup_players([0, 1, 2], [3, 4]))
 
     game.play
 
-    expect(ui.board_display_count).to eq(6)
+    expect(ui).to have_received(:display_board).exactly(6).times
   end
 
   it 'gets Ui to display game over at the end' do
@@ -94,7 +99,7 @@ describe TictactoeCore::Game do
 
     game.play
 
-    expect(ui.game_over_count).to eq(1)
+    expect(ui).to have_received(:display_game_over)
   end
 
   it 'gets Ui to display winner at the end of the won game' do
@@ -102,7 +107,7 @@ describe TictactoeCore::Game do
 
     game.play
 
-    expect(ui.winner_display_count).to eq(1)
+    expect(ui).to have_received(:display_winner)
   end
 
   it 'gets Ui to announce draw when drawn' do
@@ -110,7 +115,7 @@ describe TictactoeCore::Game do
 
     game.play
 
-    expect(ui.draw_display_count).to eq(1)
+    expect(ui).to have_received(:display_draw)
   end
 
   def setup_for_win
@@ -134,41 +139,6 @@ describe TictactoeCore::Game do
 
     def pick_position(board)
       moves.shift
-    end
-  end
-
-  class FakeUi
-    attr_reader :board_display_count,
-                :winner_display_count,
-                :draw_display_count,
-                :game_over_count,
-                :invalid_option_count
-    def initialize
-      @board_display_count = 0
-      @winner_display_count = 0
-      @draw_display_count = 0
-      @game_over_count = 0
-      @invalid_option_count = 0
-    end
-
-    def display_board(board)
-      @board_display_count += 1
-    end
-
-    def display_winner(winner)
-      @winner_display_count += 1
-    end
-
-    def display_draw
-      @draw_display_count += 1
-    end
-
-    def display_game_over
-      @game_over_count += 1
-    end
-
-    def notify_of_invalid_option
-      @invalid_option_count += 1
     end
   end
 end
