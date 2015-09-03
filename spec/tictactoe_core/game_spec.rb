@@ -86,6 +86,14 @@ describe TictactoeCore::Game do
     expect(ui).to have_received(:display_board)
   end
 
+  it 'gets Ui to clear screen after each turn' do
+    game = described_class.new(board, ui, *setup_players([0], []))
+
+    game.play_turn
+
+    expect(ui).to have_received(:clear_screen).exactly(1).times
+  end
+
   it 'gets ui to display board one extra time after it is over' do
     game = described_class.new(board, ui, *setup_players([0, 1, 2], [3, 4]))
 

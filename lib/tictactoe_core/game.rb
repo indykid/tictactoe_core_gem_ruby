@@ -15,7 +15,6 @@ module TictactoeCore
     end
 
     def play
-      display_board
       while !over?
         play_turn
       end
@@ -23,8 +22,9 @@ module TictactoeCore
     end
 
     def play_turn
-      add_to_board(valid_position)
       display_board
+      add_to_board(valid_position)
+      clear_screen
       swap_players
     end
 
@@ -71,12 +71,17 @@ module TictactoeCore
     end
 
     def finalize
+      display_board
       display_game_over
       display_result
     end
 
     def display_board
       ui.display_board(board)
+    end
+
+    def clear_screen
+      ui.clear_screen
     end
 
     def display_game_over
