@@ -1,9 +1,10 @@
 require 'tictactoe_core/player_factory'
 
 describe TictactoeCore::PlayerFactory do
-  let(:ui) { double.as_null_object }
+  let(:ui)           { double.as_null_object }
+  let(:ai_class)     { TictactoeCore::AiNegamax }
   let(:player_class) { TictactoeCore::Player }
-  let(:ai_class) { TictactoeCore::AiNegamax }
+
   it 'creates players with correct marks' do
     player_x, player_o = described_class.make_players('hvh', ui)
 

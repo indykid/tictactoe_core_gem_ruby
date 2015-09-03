@@ -1,6 +1,7 @@
 module TictactoeCore
   class Game
     attr_reader :board
+
     def initialize(board, ui, player_x, player_o)
       @ui       = ui 
       @board    = board

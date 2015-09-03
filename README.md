@@ -1,6 +1,6 @@
 # TictactoeCore
 
-TODO: Write a gem description
+Provides the core logic for a game of TicTacToe
 
 ## Installation
 
@@ -20,7 +20,19 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+This gem provides all components necessary for the game of tictactoe:
+- Board
+- Game
+- Player (human)
+- AiNegamax (computer player)
+- PlayerFactory
+
+You can require individual classes, for example:
+`require "tictactoe_core/board"`
+
+Or if you want to use everything, then following is sufficient:
+`require "tictactoe_core"`
+
 
 ## Contributing
 

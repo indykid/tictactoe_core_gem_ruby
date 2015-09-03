@@ -22,8 +22,8 @@ describe TictactoeCore::Game do
 
   it 'is over if won' do
     board = board_class.new([:x, :x, :x, 
-                       :o, :o, nil, 
-                       nil, nil, nil])
+                             :o, :o, nil, 
+                             nil, nil, nil])
     game = described_class.new(board, ui, player_x, player_o)
 
     expect(game.over?).to be(true)

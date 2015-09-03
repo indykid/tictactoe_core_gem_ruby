@@ -12,6 +12,7 @@ module TictactoeCore
     end
 
     private
+
     attr_reader :ui
   end
 end
